@@ -8,7 +8,8 @@
 		"indent": [false],
 		"comment-format": false,
 		"no-console": false,
-		"curly": false
+		"curly": false,
+		"no-var-requires": false
 	},
 	"rulesDirectory": []
 }

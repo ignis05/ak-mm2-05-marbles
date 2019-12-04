@@ -1,5 +1,5 @@
+require('./gameboard.css')
 import $ from '../helpers/$'
-const css = require('./gameboard.css')
 
 class GameBoard {
 	private DOM: HTMLElement
@@ -24,9 +24,9 @@ class GameBoard {
 		//render table
 		this.DOM.innerHTML = ''
 
-		for (let row of this.vBoard) {
-			for (let el of row) {
-				let x = $.ce('div')
+		for (const row of this.vBoard) {
+			for (const el of row) {
+				const x = $.ce('div')
 				x.classList.add('board-field')
 				this.DOM.appendChild(x)
 			}
