@@ -4,5 +4,5 @@ import colors from './helpers/colors'
 
 const board = new GameBoard('board')
 
-board.spawnNewBalls(colors.randomTab)
+board.spawnNewBalls()
 board.render()

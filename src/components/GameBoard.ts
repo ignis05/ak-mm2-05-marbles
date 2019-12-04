@@ -1,11 +1,13 @@
 require('./gameboard.css')
 import $ from '../helpers/$'
 import colors from '../helpers/colors'
+import NextDisplay from './NextDisplay'
 
 class GameBoard {
 	private DOM: HTMLElement
 	private size: number = 9
 	private vBoard: string[][] = []
+	private nextDisplay: NextDisplay = new NextDisplay('next-display')
 	constructor(private boardID: string) {
 		const tmpBoard: HTMLElement | null = $.id(boardID)
 		if (!tmpBoard) throw new Error('Invalid DOM element ID')
@@ -19,6 +21,7 @@ class GameBoard {
 			}
 		}
 		console.table(this.vBoard)
+		this.nextDisplay.colors = colors.randomTab
 	}
 
 	private get getRandomRow(): number {
@@ -38,10 +41,10 @@ class GameBoard {
 		return this.vBoard.reduce((reducer, el) => reducer + el.filter(x => x == value).length, 0)
 	}
 
-	public spawnNewBalls(colTab: string[]) {
+	public spawnNewBalls() {
 		console.log('adding new balls')
-		console.log(colTab)
-		for (const color of colTab) {
+		console.log(this.nextDisplay.colors)
+		for (const color of this.nextDisplay.colors) {
 			if (this.countFields('empty') == 1) {
 				// game over
 				window.alert('game over')
@@ -54,6 +57,8 @@ class GameBoard {
 			}
 			this.vBoard[empty.w][empty.h] = color
 		}
+
+		this.nextDisplay.renderWithColors(colors.randomTab)
 	}
 
 	public render() {
