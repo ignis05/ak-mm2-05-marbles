@@ -9,7 +9,11 @@
 		"comment-format": false,
 		"no-console": false,
 		"curly": false,
-		"no-var-requires": false
+		"no-var-requires": false,
+		"variable-name": false,
+		"arrow-parens": false,
+		"triple-equals": false,
+		"member-ordering": false
 	},
 	"rulesDirectory": []
 }

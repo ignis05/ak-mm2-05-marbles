@@ -2,12 +2,6 @@
 	box-sizing: border-box;
 }
 
-.board-field {
-	border: 1px solid black;
-	width: 50px;
-	height: 50px;
-}
-
 #board {
 	width: 450px;
 	background: white;
@@ -16,5 +10,21 @@
 	justify-content: space-evenly;
 	align-items: space-evenly;
 	box-sizing: content-box;
+	border: 1px solid black;
+}
+
+.board-field {
+	border: 1px solid black;
+	width: 50px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.board-field-ball {
+	width: 50%;
+	height: 50%;
+	border-radius: 1000%;
 	border: 1px solid black;
 }

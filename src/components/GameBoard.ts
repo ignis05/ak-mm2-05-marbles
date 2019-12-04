@@ -1,5 +1,6 @@
 require('./gameboard.css')
 import $ from '../helpers/$'
+import colors from '../helpers/colors'
 
 class GameBoard {
 	private DOM: HTMLElement
@@ -20,7 +21,45 @@ class GameBoard {
 		console.table(this.vBoard)
 	}
 
+	private get getRandomRow(): number {
+		return Math.floor(Math.random() * this.size)
+	}
+
+	private get getRrandomFiled() {
+		const _this = this
+		enum Field {
+			w = _this.getRandomRow,
+			h = _this.getRandomRow,
+		}
+		return Field
+	}
+
+	private countFields(value: string): number {
+		return this.vBoard.reduce((reducer, el) => reducer + el.filter(x => x == value).length, 0)
+	}
+
+	public spawnNewBalls(colTab: string[]) {
+		console.log('adding new balls')
+		console.log(colTab)
+		for (const color of colTab) {
+			if (this.countFields('empty') == 1) {
+				// game over
+				window.alert('game over')
+				break
+			}
+			let empty = null
+			while (empty === null) {
+				const x = this.getRrandomFiled
+				if (this.vBoard[x.w][x.h] == 'empty') empty = x
+			}
+			this.vBoard[empty.w][empty.h] = color
+		}
+	}
+
 	public render() {
+		console.log('rendring')
+		console.table(this.vBoard)
+
 		//render table
 		this.DOM.innerHTML = ''
 
@@ -29,6 +68,14 @@ class GameBoard {
 				const x = $.ce('div')
 				x.classList.add('board-field')
 				this.DOM.appendChild(x)
+
+				//ball render
+				if (colors.tab.includes(el)) {
+					const c = $.ce('div')
+					c.classList.add('board-field-ball')
+					c.style.background = el
+					x.appendChild(c)
+				}
 			}
 		}
 	}
