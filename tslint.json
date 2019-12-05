@@ -13,7 +13,8 @@
 		"variable-name": false,
 		"arrow-parens": false,
 		"triple-equals": false,
-		"member-ordering": false
+		"member-ordering": false,
+		"one-line": false
 	},
 	"rulesDirectory": []
 }

@@ -68,10 +68,36 @@ class GameBoard {
 		const field: HTMLElement = e.currentTarget
 		const row: string = `${field.dataset.row}`
 		const col: string = `${field.dataset.col}`
-		console.log(row)
-		console.log(col)
-		if (this.selectedField == row + col) this.selectedField = null
-		else this.selectedField = row + col
+
+		// flield with ball
+		if (this.vBoard[parseInt(row, 10)][parseInt(col, 10)] != 'empty') {
+			console.log(row)
+			console.log(col)
+			if (this.selectedField == row + col) this.selectedField = null
+			else this.selectedField = row + col
+			this.render()
+		}
+		//empty field
+		else {
+			console.log('moving to empty field')
+			this.moveTo(parseInt(row, 10), parseInt(col, 10))
+		}
+	}
+
+	private moveTo(col: number, row: number) {
+		console.log(col, row)
+		if (this.vBoard[col][row] != 'empty') throw new Error('Attempted to move to non-empty field')
+		if (this.selectedField == null) throw new Error('Attempted to move with no field selected')
+
+		const selCol = this.selectedField[0]
+		const selRow = this.selectedField[1]
+
+		const color: string = this.vBoard[parseInt(selCol, 10)][parseInt(selRow, 10)]
+		if (color == 'empty') throw new Error('Selecetd field is empty')
+		this.vBoard[parseInt(selCol, 10)][parseInt(selRow, 10)] = 'empty'
+		this.vBoard[col][row] = color
+
+		this.selectedField = null
 		this.render()
 	}
 
@@ -90,7 +116,7 @@ class GameBoard {
 				x.dataset.col = j.toString()
 				this.DOM.appendChild(x)
 
-				if (el != 'empty') {
+				if (el != 'empty' || this.selectedField != null) {
 					x.classList.add('board-field-active')
 					x.onclick = this.fieldClickHandler
 				}
