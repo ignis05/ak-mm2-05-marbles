@@ -11,7 +11,6 @@ class NextDisplay {
 		this.DOM = tmp
 	}
 
-	@colors.validateFunc
 	public renderWithColors(colTab: string[]) {
 		this.colors = colTab
 		this.render()

@@ -6,7 +6,4 @@ export default {
 	get randomTab() {
 		return [this.random, this.random, this.random]
 	},
-	validateFunc(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-		console.log(target, propertyKey, descriptor)
-	},
 }
