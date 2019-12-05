@@ -8,6 +8,7 @@ class GameBoard {
 	private size: number = 9
 	private vBoard: string[][] = []
 	private nextDisplay: NextDisplay = new NextDisplay('next-display')
+	private selectedField: string | null = null
 	constructor(private boardID: string) {
 		const tmpBoard: HTMLElement | null = $.id(boardID)
 		if (!tmpBoard) throw new Error('Invalid DOM element ID')
@@ -22,6 +23,8 @@ class GameBoard {
 		}
 		console.table(this.vBoard)
 		this.nextDisplay.colors = colors.randomTab
+
+		this.fieldClickHandler = this.fieldClickHandler.bind(this)
 	}
 
 	private get getRandomRow(): number {
@@ -61,6 +64,14 @@ class GameBoard {
 		this.nextDisplay.renderWithColors(colors.randomTab)
 	}
 
+	private fieldClickHandler(e: any) {
+		const field: HTMLElement = e.currentTarget
+		const row = field.dataset.row
+		const col = field.dataset.col
+		console.log(row)
+		console.log(col)
+	}
+
 	public render() {
 		console.log('rendring')
 		console.table(this.vBoard)
@@ -68,11 +79,18 @@ class GameBoard {
 		//render table
 		this.DOM.innerHTML = ''
 
-		for (const row of this.vBoard) {
-			for (const el of row) {
+		this.vBoard.forEach((row, i) => {
+			row.forEach((el, j) => {
 				const x = $.ce('div')
 				x.classList.add('board-field')
+				x.dataset.row = i.toString()
+				x.dataset.col = j.toString()
 				this.DOM.appendChild(x)
+
+				if (el != 'empty') {
+					x.classList.add('board-field-active')
+					x.onclick = this.fieldClickHandler
+				}
 
 				//ball render
 				if (colors.tab.includes(el)) {
@@ -81,8 +99,8 @@ class GameBoard {
 					c.style.background = el
 					x.appendChild(c)
 				}
-			}
-		}
+			})
+		})
 	}
 }
 
