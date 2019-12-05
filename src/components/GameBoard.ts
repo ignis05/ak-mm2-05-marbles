@@ -66,10 +66,13 @@ class GameBoard {
 
 	private fieldClickHandler(e: any) {
 		const field: HTMLElement = e.currentTarget
-		const row = field.dataset.row
-		const col = field.dataset.col
+		const row: string = `${field.dataset.row}`
+		const col: string = `${field.dataset.col}`
 		console.log(row)
 		console.log(col)
+		if (this.selectedField == row + col) this.selectedField = null
+		else this.selectedField = row + col
+		this.render()
 	}
 
 	public render() {
@@ -96,6 +99,7 @@ class GameBoard {
 				if (colors.tab.includes(el)) {
 					const c = $.ce('div')
 					c.classList.add('board-field-ball')
+					if (this.selectedField == `${i}${j}`) c.classList.add('board-field-ball-selected')
 					c.style.background = el
 					x.appendChild(c)
 				}
