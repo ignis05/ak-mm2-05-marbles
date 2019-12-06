@@ -14,7 +14,8 @@
 		"arrow-parens": false,
 		"triple-equals": false,
 		"member-ordering": false,
-		"one-line": false
+		"one-line": false,
+		"prefer-const": false
 	},
 	"rulesDirectory": []
 }

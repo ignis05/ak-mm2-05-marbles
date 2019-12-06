@@ -137,6 +137,7 @@ class GameBoard {
 	private checkAfterMove(i: number, j: number): boolean {
 		const el = this.vBoard[i][j]
 		console.log(`Placed ${el} on [${i}, ${j}]`)
+		// horizontal
 		let left: number = 0
 		for (let x = i - 1; x >= 0; x--) {
 			if (this.vBoard[x][j] == el) left++
@@ -147,6 +148,7 @@ class GameBoard {
 			if (this.vBoard[x][j] == el) right++
 			else break
 		}
+		// vertical
 		let top: number = 0
 		for (let x = j - 1; x >= 0; x--) {
 			if (this.vBoard[i][x] == el) top++
@@ -157,8 +159,17 @@ class GameBoard {
 			if (this.vBoard[i][x] == el) bot++
 			else break
 		}
+		// s1
+
+		if (left + right < 4) {
+			left = 0
+			right = 0
+		}
+		if (top + bot < 4) {
+			top = 0
+			bot = 0
+		}
 		let rmCount = left + right + top + bot
-		if (left + right < 4 && top + bot < 4) rmCount = 0
 		if (rmCount > 0) this.clearBalls({ i, j, left, right, top, bot })
 		return rmCount > 0
 	}
