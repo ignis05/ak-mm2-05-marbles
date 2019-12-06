@@ -102,66 +102,65 @@ class GameBoard {
 
 		this.selectedField = null
 
-		const gotPoints = this.checkAfterMove()
+		const gotPoints = this.checkAfterMove(col, row)
 		console.log('got points:', gotPoints)
 		if (!gotPoints) this.spawnNewBalls()
 
 		this.render()
 	}
 
-	private clearBalls(i: number, j: number, moves: Array<{ direction: string; count: number }>) {
-		// 0 points if singe direction, -1 for each move to compensate for counters
-		console.log('clearing for:', arguments)
-		let points: number = 1 - moves.length
-		for (const move of moves) {
-			switch (move.direction) {
-				case 'right':
-					for (let x = i; x < this.size; x++) {
-						this.vBoard[x][j] = 'empty'
-						points++
-					}
-					break
-				case 'bottom':
-					for (let x = j; x < this.size; x++) {
-						this.vBoard[i][x] = 'empty'
-						points++
-					}
-					break
-			}
-			this.pointCounter.addPoints(points)
+	private clearBalls(params: { i: number; j: number; left: number; right: number; top: number; bot: number }) {
+		console.log('removing with params:', params)
+		let points = 1
+		const { i, j, left, right, top, bot } = params
+		const b = this.vBoard
+		b[i][j] = 'empty'
+
+		// horizontal
+		for (let x = i - left; x <= i + right; x++) {
+			if (x == i) continue // skip central point
+			b[x][j] = 'empty'
+			points++
 		}
+		// vertical
+		for (let x = j - top; x <= j + bot; x++) {
+			if (x == j) continue // skip central point
+			b[i][x] = 'empty'
+			points++
+		}
+
+		this.render()
+
+		this.pointCounter.addPoints(points)
 	}
 
-	private checkAfterMove() {
-		let cleared = false
-		this.vBoard.forEach((row, i) => {
-			row.forEach((el, j) => {
-				if (el == 'empty') return
-
-				// right
-				let counterRight = 0
-				for (let x = i; x < this.size; x++) {
-					if (this.vBoard[x][j] == el) counterRight++
-					else break
-				}
-
-				// bottom
-				let counterBottom = 0
-				for (let x = j; x < this.size; x++) {
-					if (this.vBoard[i][x] == el) counterBottom++
-					else break
-				}
-
-				const moves: Array<{ direction: string; count: number }> = []
-				if (counterRight >= 5) moves.push({ direction: 'right', count: counterRight })
-				if (counterBottom >= 5) moves.push({ direction: 'bottom', count: counterBottom })
-				if (moves.length > 0) {
-					this.clearBalls(i, j, moves)
-					cleared = true
-				}
-			})
-		})
-		return cleared
+	private checkAfterMove(i: number, j: number): boolean {
+		const el = this.vBoard[i][j]
+		console.log(`Placed ${el} on [${i}, ${j}]`)
+		let left: number = 0
+		for (let x = i - 1; x >= 0; x--) {
+			if (this.vBoard[x][j] == el) left++
+			else break
+		}
+		let right: number = 0
+		for (let x = i + 1; x < this.size; x++) {
+			if (this.vBoard[x][j] == el) right++
+			else break
+		}
+		let top: number = 0
+		for (let x = j - 1; x >= 0; x--) {
+			if (this.vBoard[i][x] == el) top++
+			else break
+		}
+		let bot: number = 0
+		for (let x = j + 1; x < this.size; x++) {
+			if (this.vBoard[i][x] == el) bot++
+			else break
+		}
+		let rmCount = left + right + top + bot
+		if (left + right < 4 && top + bot < 4) rmCount = 0
+		if (rmCount > 0) this.clearBalls({ i, j, left, right, top, bot })
+		return rmCount > 0
 	}
 
 	public render() {
