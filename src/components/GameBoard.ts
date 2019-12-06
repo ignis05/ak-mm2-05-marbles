@@ -2,12 +2,14 @@ require('./gameboard.css')
 import $ from '../helpers/$'
 import colors from '../helpers/colors'
 import NextDisplay from './NextDisplay'
+import PointCounter from './PointCounter'
 
 class GameBoard {
 	private DOM: HTMLElement
 	private size: number = 9
 	private vBoard: string[][] = []
 	private nextDisplay: NextDisplay = new NextDisplay('next-display')
+	private pointCounter: PointCounter = new PointCounter('score-display')
 	private selectedField: string | null = null
 	constructor(private boardID: string) {
 		const tmpBoard: HTMLElement | null = $.id(boardID)
@@ -62,6 +64,7 @@ class GameBoard {
 		}
 
 		this.nextDisplay.renderWithColors(colors.randomTab)
+		this.render()
 	}
 
 	private fieldClickHandler(e: any) {
@@ -98,7 +101,67 @@ class GameBoard {
 		this.vBoard[col][row] = color
 
 		this.selectedField = null
+
+		const gotPoints = this.checkAfterMove()
+		console.log('got points:', gotPoints)
+		if (!gotPoints) this.spawnNewBalls()
+
 		this.render()
+	}
+
+	private clearBalls(i: number, j: number, moves: Array<{ direction: string; count: number }>) {
+		// 0 points if singe direction, -1 for each move to compensate for counters
+		console.log('clearing for:', arguments)
+		let points: number = 1 - moves.length
+		for (const move of moves) {
+			switch (move.direction) {
+				case 'right':
+					for (let x = i; x < this.size; x++) {
+						this.vBoard[x][j] = 'empty'
+						points++
+					}
+					break
+				case 'bottom':
+					for (let x = j; x < this.size; x++) {
+						this.vBoard[i][x] = 'empty'
+						points++
+					}
+					break
+			}
+			this.pointCounter.addPoints(points)
+		}
+	}
+
+	private checkAfterMove() {
+		let cleared = false
+		this.vBoard.forEach((row, i) => {
+			row.forEach((el, j) => {
+				if (el == 'empty') return
+
+				// right
+				let counterRight = 0
+				for (let x = i; x < this.size; x++) {
+					if (this.vBoard[x][j] == el) counterRight++
+					else break
+				}
+
+				// bottom
+				let counterBottom = 0
+				for (let x = j; x < this.size; x++) {
+					if (this.vBoard[i][x] == el) counterBottom++
+					else break
+				}
+
+				const moves: Array<{ direction: string; count: number }> = []
+				if (counterRight >= 5) moves.push({ direction: 'right', count: counterRight })
+				if (counterBottom >= 5) moves.push({ direction: 'bottom', count: counterBottom })
+				if (moves.length > 0) {
+					this.clearBalls(i, j, moves)
+					cleared = true
+				}
+			})
+		})
+		return cleared
 	}
 
 	public render() {
