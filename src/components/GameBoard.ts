@@ -12,6 +12,7 @@ class GameBoard {
 	private nextDisplay: NextDisplay = new NextDisplay('next-display')
 	private pointCounter: PointCounter = new PointCounter('score-display')
 	private selectedField: string | null = null
+	private path: number[][] | null = null
 	constructor(private boardID: string) {
 		const tmpBoard: HTMLElement | null = $.id(boardID)
 		if (!tmpBoard) throw new Error('Invalid DOM element ID')
@@ -87,8 +88,10 @@ class GameBoard {
 			const x = parseInt(row, 10)
 			const y = parseInt(col, 10)
 			if (this.selectedField == null || this.selectedField[0] == null || this.selectedField[1] == null) throw new Error('invalid values')
-			findPath(JSON.parse(JSON.stringify(this.vBoard)), { x: parseInt(this.selectedField[0], 10), y: parseInt(this.selectedField[1], 10) }, { x, y })
-			// this.moveTo(x, y)
+			const way = findPath(JSON.parse(JSON.stringify(this.vBoard)), { x: parseInt(this.selectedField[0], 10), y: parseInt(this.selectedField[1], 10) }, { x, y })
+			if (way == null) return
+			this.path = way.path
+			this.moveTo(x, y)
 		}
 	}
 
