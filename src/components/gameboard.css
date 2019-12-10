@@ -23,6 +23,10 @@
 	justify-content: center;
 }
 
+.path {
+	background: red !important;
+}
+
 .board-field-active {
 	cursor: pointer;
 }

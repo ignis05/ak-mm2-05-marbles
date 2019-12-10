@@ -9,6 +9,8 @@ class GameBoard {
 	private DOM: HTMLElement
 	private size: number = 9
 	private vBoard: string[][] = []
+	private domBoard: HTMLElement[][] = []
+	private lastUpdate: number[] | null = null
 	private nextDisplay: NextDisplay = new NextDisplay('next-display')
 	private pointCounter: PointCounter = new PointCounter('score-display')
 	private selectedField: string | null = null
@@ -29,6 +31,7 @@ class GameBoard {
 		this.nextDisplay.colors = colors.randomTab
 
 		this.fieldClickHandler = this.fieldClickHandler.bind(this)
+		this.highlightPath = this.highlightPath.bind(this)
 	}
 
 	private get getRandomRow(): number {
@@ -52,17 +55,18 @@ class GameBoard {
 		console.log('adding new balls')
 		console.log(this.nextDisplay.colors)
 		for (const color of this.nextDisplay.colors) {
-			if (this.countFields('empty') == 1) {
-				// game over
-				window.alert('game over')
-				break
-			}
 			let empty = null
 			while (empty === null) {
 				const x = this.getRrandomFiled
 				if (this.vBoard[x.w][x.h] == 'empty') empty = x
 			}
 			this.vBoard[empty.w][empty.h] = color
+			this.checkAfterMove(empty.w, empty.h)
+			if (this.countFields('empty') == 0) {
+				// game over
+				window.alert('game over')
+				break
+			}
 		}
 
 		this.nextDisplay.renderWithColors(colors.randomTab)
@@ -70,6 +74,7 @@ class GameBoard {
 	}
 
 	private fieldClickHandler(e: any) {
+		this.path = null
 		const field: HTMLElement = e.currentTarget
 		const row: string = `${field.dataset.row}`
 		const col: string = `${field.dataset.col}`
@@ -90,9 +95,24 @@ class GameBoard {
 			if (this.selectedField == null || this.selectedField[0] == null || this.selectedField[1] == null) throw new Error('invalid values')
 			const way = findPath(JSON.parse(JSON.stringify(this.vBoard)), { x: parseInt(this.selectedField[0], 10), y: parseInt(this.selectedField[1], 10) }, { x, y })
 			if (way == null) return
-			this.path = way.path
+			this.path = null
 			this.moveTo(x, y)
 		}
+	}
+
+	private highlightPath(e: any) {
+		if (this.selectedField == null || this.selectedField[0] == null || this.selectedField[1] == null) return
+		const field: HTMLElement = e.currentTarget
+		const x: number = parseInt(`${field.dataset.row}`, 10)
+		const y: number = parseInt(`${field.dataset.col}`, 10)
+		if (this.vBoard[x][y] != 'empty') return
+		if (this.lastUpdate && this.lastUpdate[0] == x && this.lastUpdate[1] == y) return
+		const way = findPath(JSON.parse(JSON.stringify(this.vBoard)), { x: parseInt(this.selectedField[0], 10), y: parseInt(this.selectedField[1], 10) }, { x, y })
+		if (!way) return
+		this.lastUpdate = [x, y]
+		console.log('updating path')
+		this.path = way.path
+		this.render()
 	}
 
 	private moveTo(col: number, row: number) {
@@ -251,10 +271,12 @@ class GameBoard {
 
 	public render() {
 		console.log('rendring')
-		console.table(this.vBoard)
+		// console.table(this.vBoard)
 
 		//render table
 		this.DOM.innerHTML = ''
+		this.domBoard = []
+		this.vBoard.forEach(row => this.domBoard.push([]))
 
 		this.vBoard.forEach((row, i) => {
 			row.forEach((el, j) => {
@@ -262,11 +284,13 @@ class GameBoard {
 				x.classList.add('board-field')
 				x.dataset.row = i.toString()
 				x.dataset.col = j.toString()
+				x.addEventListener('mouseenter', this.highlightPath)
 				this.DOM.appendChild(x)
+				this.domBoard[i][j] = x
 
 				if (el != 'empty' || this.selectedField != null) {
 					x.classList.add('board-field-active')
-					x.onclick = this.fieldClickHandler
+					x.addEventListener('click', this.fieldClickHandler)
 				}
 
 				//ball render
@@ -279,6 +303,12 @@ class GameBoard {
 				}
 			})
 		})
+
+		if (this.path) {
+			for (const [x, y] of this.path) {
+				this.domBoard[x][y].classList.add('path')
+			}
+		}
 	}
 }
 
