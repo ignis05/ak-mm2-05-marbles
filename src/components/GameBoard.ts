@@ -1,6 +1,7 @@
 require('./gameboard.css')
 import $ from '../helpers/$'
 import colors from '../helpers/colors'
+import findPath from '../helpers/pathfinding'
 import NextDisplay from './NextDisplay'
 import PointCounter from './PointCounter'
 
@@ -83,7 +84,11 @@ class GameBoard {
 		//empty field
 		else {
 			console.log('moving to empty field')
-			this.moveTo(parseInt(row, 10), parseInt(col, 10))
+			const x = parseInt(row, 10)
+			const y = parseInt(col, 10)
+			if (this.selectedField == null || this.selectedField[0] == null || this.selectedField[1] == null) throw new Error('invalid values')
+			findPath(JSON.parse(JSON.stringify(this.vBoard)), { x: parseInt(this.selectedField[0], 10), y: parseInt(this.selectedField[1], 10) }, { x, y })
+			// this.moveTo(x, y)
 		}
 	}
 
