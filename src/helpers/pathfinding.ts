@@ -13,27 +13,28 @@ export default function(grid: string[][], start: { x: number; y: number }, end: 
 		[1, 0],
 		[0, -1],
 	]
-	const N = grid.length
-	const isValidCoord = (x: number, y: number) => x >= 0 && x < N && y >= 0 && y < N
+	const isValidCoord = (x: number, y: number) => x >= 0 && x < grid.length && y >= 0 && y < grid.length
 
 	while (queue.length) {
 		let tmp = queue.shift()
 		console.log(tmp)
 		if (tmp == undefined) throw new Error('this error will never throw, typescript is retarded')
-		const x = tmp.coord[0]
-		const y = tmp.coord[1]
-		const dist = tmp.dist
-		const path = tmp.path
+		const x: number = tmp.coord[0]
+		const y: number = tmp.coord[1]
+		const dist: number = tmp.dist
+		const path: number[][] = tmp.path
 
+		// found end
 		if (x == end.x && y == end.y) {
 			let way = { dist, path }
 			console.log('found:', way)
 			return way
 		}
 
+		// add move possible paths
 		for (let [moveX, moveY] of directs) {
-			const nextX = x + moveX
-			const nextY = y + moveY
+			const nextX: number = x + moveX
+			const nextY: number = y + moveY
 
 			if (isValidCoord(nextX, nextY) && (grid[nextX][nextY] == 'empty' || grid[nextX][nextY] == 'END')) {
 				queue.push({ coord: [nextX, nextY], dist: dist + 1, path: [...path, [nextX, nextY]] })
