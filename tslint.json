@@ -15,7 +15,8 @@
 		"triple-equals": false,
 		"member-ordering": false,
 		"one-line": false,
-		"prefer-const": false
+		"prefer-const": false,
+		"max-line-length": false
 	},
 	"rulesDirectory": []
 }

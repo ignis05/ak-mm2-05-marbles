@@ -109,10 +109,10 @@ class GameBoard {
 		this.render()
 	}
 
-	private clearBalls(params: { i: number; j: number; left: number; right: number; top: number; bot: number }) {
+	private clearBalls(params: { i: number; j: number; left: number; right: number; top: number; bot: number; rtop: number; ltop: number; rbot: number; lbot: number }) {
 		console.log('removing with params:', params)
 		let points = 1
-		const { i, j, left, right, top, bot } = params
+		const { i, j, left, right, top, bot, rtop, rbot, ltop, lbot } = params
 		const b = this.vBoard
 		b[i][j] = 'empty'
 
@@ -126,6 +126,26 @@ class GameBoard {
 		for (let x = j - top; x <= j + bot; x++) {
 			if (x == j) continue // skip central point
 			b[i][x] = 'empty'
+			points++
+		}
+		// rbot
+		for (let x = 1; x <= rbot; x++) {
+			b[i + x][j + x] = 'empty'
+			points++
+		}
+		// ltop
+		for (let x = 1; x <= ltop; x++) {
+			b[i - x][j - x] = 'empty'
+			points++
+		}
+		// rtop
+		for (let x = 1; x <= rtop; x++) {
+			b[i + x][j - x] = 'empty'
+			points++
+		}
+		// lbot
+		for (let x = 1; x <= lbot; x++) {
+			b[i - x][j + x] = 'empty'
 			points++
 		}
 
@@ -159,7 +179,46 @@ class GameBoard {
 			if (this.vBoard[i][x] == el) bot++
 			else break
 		}
-		// s1
+		// l top
+		let ltop: number = 0
+		for (let x = 1; true; x++) {
+			let ti = i - x
+			let tj = j - x
+			if (ti < 0 || tj < 0 || ti >= this.size || tj >= this.size) break
+
+			if (this.vBoard[ti][tj] == el) ltop++
+			else break
+		}
+		// l bot
+		let lbot: number = 0
+		for (let x = 1; true; x++) {
+			let ti = i - x
+			let tj = j + x
+			if (ti < 0 || tj < 0 || ti >= this.size || tj >= this.size) break
+
+			if (this.vBoard[ti][tj] == el) lbot++
+			else break
+		}
+		// r bot
+		let rbot: number = 0
+		for (let x = 1; true; x++) {
+			let ti = i + x
+			let tj = j + x
+			if (ti < 0 || tj < 0 || ti >= this.size || tj >= this.size) break
+
+			if (this.vBoard[ti][tj] == el) rbot++
+			else break
+		}
+		// r top
+		let rtop: number = 0
+		for (let x = 1; true; x++) {
+			let ti = i + x
+			let tj = j - x
+			if (ti < 0 || tj < 0 || ti >= this.size || tj >= this.size) break
+
+			if (this.vBoard[ti][tj] == el) rtop++
+			else break
+		}
 
 		if (left + right < 4) {
 			left = 0
@@ -169,8 +228,16 @@ class GameBoard {
 			top = 0
 			bot = 0
 		}
-		let rmCount = left + right + top + bot
-		if (rmCount > 0) this.clearBalls({ i, j, left, right, top, bot })
+		if (ltop + rbot < 4) {
+			ltop = 0
+			rbot = 0
+		}
+		if (rtop + lbot < 4) {
+			rtop = 0
+			lbot = 0
+		}
+		let rmCount = left + right + top + bot + rtop + ltop + rbot + lbot
+		if (rmCount > 0) this.clearBalls({ i, j, left, right, top, bot, ltop, lbot, rtop, rbot })
 		return rmCount > 0
 	}
 
