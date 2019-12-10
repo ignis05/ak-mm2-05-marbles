@@ -73,18 +73,30 @@ class GameBoard {
 		this.render()
 	}
 
+	private checkAround(x: number, y: number) {
+		let emptyFields = 0
+		if (this.vBoard[x - 1] && this.vBoard[x - 1][y] == 'empty') emptyFields++
+		if (this.vBoard[x + 1] && this.vBoard[x + 1][y] == 'empty') emptyFields++
+		if (this.vBoard[x][y - 1] == 'empty') emptyFields++
+		if (this.vBoard[x][y + 1] == 'empty') emptyFields++
+		return emptyFields > 0
+	}
+
 	private fieldClickHandler(e: any) {
 		this.path = null
 		const field: HTMLElement = e.currentTarget
 		const row: string = `${field.dataset.row}`
 		const col: string = `${field.dataset.col}`
+		const rowN = parseInt(row, 10)
+		const colN = parseInt(col, 10)
 
 		// flield with ball
-		if (this.vBoard[parseInt(row, 10)][parseInt(col, 10)] != 'empty') {
+		if (this.vBoard[rowN][colN] != 'empty') {
 			console.log(row)
 			console.log(col)
 			if (this.selectedField == row + col) this.selectedField = null
 			else this.selectedField = row + col
+			if (!this.checkAround(rowN, colN)) this.selectedField = null
 			this.render()
 		}
 		//empty field
